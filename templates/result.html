@@ -1,22 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Result</title>
+<title>Resume AI Report</title>
+
+<style>
+body{
+    margin:0;
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg,#0f172a,#020617);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.card{
+    width:500px;
+    background:#111827;
+    padding:25px;
+    border-radius:16px;
+    box-shadow:0 0 30px rgba(0,255,150,0.1);
+}
+
+h2{
+    color:#22c55e;
+}
+
+.score{
+    font-size:40px;
+    font-weight:bold;
+    color:#38bdf8;
+}
+
+.bar{
+    height:10px;
+    background:#1f2937;
+    border-radius:10px;
+    overflow:hidden;
+    margin:10px 0;
+}
+
+.fill{
+    height:10px;
+    background:linear-gradient(90deg,#22c55e,#38bdf8);
+}
+
+.box{
+    background:#1f2937;
+    padding:10px;
+    border-radius:8px;
+    max-height:150px;
+    overflow:auto;
+    font-size:13px;
+}
+
+a{
+    display:inline-block;
+    margin-top:15px;
+    color:#22c55e;
+    text-decoration:none;
+}
+</style>
+
 </head>
+
 <body>
 
-<h2>Result</h2>
+<div class="card">
 
-<p>Skills:</p>
-<ul>
-{% for skill in skills %}
-    <li>{{ skill }}</li>
-{% endfor %}
-</ul>
+<h2>🚀 Resume AI Report</h2>
 
-<p>Score: {{ score }}%</p>
+<p><b>File:</b> {{ filename }}</p>
 
-<a href="/">Back</a>
+<p class="score">{{ score }}/100</p>
+
+<div class="bar">
+    <div class="fill" style="width:{{ score }}%"></div>
+</div>
+
+<p><b>Resume Preview:</b></p>
+<div class="box">{{ preview }}</div>
+
+<a href="/">⬅ Try Another Resume</a>
+
+</div>
 
 </body>
 </html>

@@ -1,23 +1,467 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ResumeAI</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume AI Analyzer - Professional Resume Analysis</title>
+  
+  <style>
+    :root {
+      --primary-color: #3b82f6;
+      --primary-dark: #1d4ed8;
+      --success-color: #10b981;
+      --success-dark: #059669;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #111827;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #6b7280;
+      --border-color: #334155;
+      --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-card);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      animation: slideUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 0;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-input-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .file-input-label:hover {
+      border-color: var(--primary-color);
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--text-primary);
+    }
+
+    .file-input-label.has-file {
+      border-color: var(--success-color);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .file-input-label i {
+      font-size: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      padding: 16px 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 32px 0;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .feature i {
+      color: var(--success-color);
+      font-size: 16px;
+    }
+
+    .footer {
+      text-align: center;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 32px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .file-info {
+      margin-top: 8px;
+      padding: 12px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--success-color);
+      display: none;
+    }
+
+    .file-info.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px;
+        margin: 10px;
+      }
+      
+      .header h1 {
+        font-size: 24px;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Loading State */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
+
 <body>
+  <div class="container">
+    <div class="header">
+      <h1>🚀 Resume AI Analyzer</h1>
+      <p>Get instant AI-powered insights to optimize your resume</p>
+    </div>
 
-<h1>Resume Screening System</h1>
+    <div class="features">
+      <div class="feature">
+        <i>⚡</i>
+        <span>Instant Analysis</span>
+      </div>
+      <div class="feature">
+        <i>🎯</i>
+        <span>ATS Optimized</span>
+      </div>
+      <div class="feature">
+        <i>📊</i>
+        <span>Match Score</span>
+      </div>
+      <div class="feature">
+        <i>💡</i>
+        <span>Smart Suggestions</span>
+      </div>
+    </div>
 
-<form action="/analyze" method="post" enctype="multipart/form-data">
+    <form id="resumeForm" action="/analyze" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="resume">📄 Upload Resume (PDF, DOC, DOCX)</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="resume" name="resume" class="file-input" accept=".pdf,.doc,.docx" required>
+          <label for="resume" class="file-input-label" id="fileLabel">
+            <i>📎</i>
+            <span>Click to upload or drag & drop</span>
+            <i>⬆️</i>
+          </label>
+        </div>
+        <div id="fileInfo" class="file-info">
+          <i>✅</i> <span id="fileName"></span> selected
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="job_desc">📋 Job Description</label>
+        <textarea 
+          id="job_desc" 
+          name="job_desc" 
+          placeholder="Paste the full job description here...&#10;&#10;AI will analyze keyword matches, required skills, and provide optimization suggestions."
+          required
+        ></textarea>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">
+        <span id="btnText">🔍 Analyze My Resume</span>
+        <div id="loadingSpinner" class="loading">
+          <div class="spinner"></div>
+          <span>Analyzing...</span>
+        </div>
+      </button>
+    </form>
+
+    <div class="footer">
+      <p>Built with  by <strong>Jatin</strong> | Professional Resume AI</p>
+    </div>
+  </div>
+
+  <script>
+    // Professional form handling
+    const fileInput = document.getElementById('resume');
+    const fileLabel = document.getElementById('fileLabel');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileNameSpan = document.getElementById('fileName');
+    const form = document.getElementById('resumeForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
+    // File input handling
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        fileLabel.classList.add('has-file');
+        fileNameSpan.textContent = file.name;
+        fileInfo.classList.add('show');
+      }
+    });
+
+    // Drag & drop support
+    const fileInputWrapper = document.querySelector('.file-input-wrapper');
     
-    <label>Upload Resume:</label><br>
-    <input type="file" name="resume" required><br><br>
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      fileInputWrapper.addEventListener(eventName, preventDefaults, false);
+    });
 
-    <label>Job Description:</label><br>
-    <textarea name="job_desc" rows="6" cols="50"></textarea><br><br>
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
-    <button type="submit">Analyze</button>
+    ['dragenter', 'dragover'].forEach(eventName => {
+      fileInputWrapper.addEventListener(eventName, highlight, false);
+    });
 
-</form>
+    ['dragleave', 'drop'].forEach(eventName => {
+      fileInputWrapper.addEventListener(eventName, unhighlight, false);
+    });
 
+    function highlight(e) {
+      fileLabel.style.borderColor = 'var(--primary-color)';
+      fileLabel.style.background = 'rgba(59, 130, 246, 0.1)';
+    }
+
+    function unhighlight(e) {
+      fileLabel.style.borderColor = 'var(--border-color)';
+      fileLabel.style.background = 'var(--bg-secondary)';
+    }
+
+    fileInputWrapper.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length > 0) {
+        fileInput.files = files;
+        fileInput.dispatchEvent(new Event('change'));
+      }
+    }
+
+    // Form submission with loading state
+    form.addEventListener('submit', function(e) {
+      if (!fileInput.files.length || !job_desc.value.trim()) {
+        e.preventDefault();
+        alert('Please upload a resume and add a job description.');
+        return;
+      }
+
+      // Show loading state
+      submitBtn.disabled = true;
+      btnText.style.display = 'none';
+      loadingSpinner.classList.add('show');
+    });
+
+    // Auto-resize textarea
+    const textarea = document.getElementById('job_desc');
+    textarea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+    });
+  </script>
 </body>
 </html>
