@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+</head>
+<body>
+
+<h2>Result</h2>
+
+<p>Skills:</p>
+<ul>
+{% for skill in skills %}
+    <li>{{ skill }}</li>
+{% endfor %}
+</ul>
+
+<p>Score: {{ score }}%</p>
+
+<a href="/">Back</a>
+
+</body>
+</html>

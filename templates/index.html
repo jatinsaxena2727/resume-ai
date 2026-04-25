@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ResumeAI</title>
+</head>
+<body>
+
+<h1>Resume Screening System</h1>
+
+<form action="/analyze" method="post" enctype="multipart/form-data">
+    
+    <label>Upload Resume:</label><br>
+    <input type="file" name="resume" required><br><br>
+
+    <label>Job Description:</label><br>
+    <textarea name="job_desc" rows="6" cols="50"></textarea><br><br>
+
+    <button type="submit">Analyze</button>
+
+</form>
+
+</body>
+</html>
